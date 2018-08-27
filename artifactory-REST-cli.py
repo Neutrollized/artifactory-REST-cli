@@ -35,11 +35,11 @@ def readcreds():
     return contents
 
 
-# ----- Repo REST API functions ----- #
+# ----- Users REST API functions ----- #
 
-# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-RepositoryConfiguration
-def getrepo(repo_name):
-    url = artifactory_url + 'repositories/' + repo_name
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetUserDetails
+def getuser(user_name):
+    url = artifactory_url + 'security/users/' + user_name
 
     return requests.get(
         url,
@@ -47,35 +47,33 @@ def getrepo(repo_name):
         verify=False)
 
 
-# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateRepository
-def createrepo(repo_name, repo_class, repo_package):
-    '''
-    repo_type (String): local | remote | virtual
-    repo_package (String): see "repo_layout" dictionary in Variables section
-    '''
-    url = artifactory_url + 'repositories/' + repo_name
-    data = {
-        "rclass": repo_class,
-        "packageType": repo_package,
-        "repoLayoutRef": repo_layout[repo_package]
-    }
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-UpdateUser
+def addusergroup(user_name, group_name):
+    u = getuser(user_name)
+    # users, groups, repos and config are dictionaries
+    groups = jq(".groups").transform(json.loads(u.text))
+
+    group_name = [group_name]
+
+    # is repo_name is a subset of repos
+    if set(group_name) <= set(groups):
+        new_groups = groups
+    else:
+        new_groups = groups + group_name
+
+    print('MORE GROUPS')
+    print(new_groups)
+    config = jq(".").transform(json.loads(u.text))
+    config['groups'] = new_groups
+
+    url = artifactory_url + 'security/users/' + user_name
     headers = {'Content-Type': 'application/json'}
 
-    return requests.put(
+    return requests.post(
         url,
         auth=HTTPBasicAuth(user, password),
-        data=json.dumps(data),
+        data=json.dumps(config),
         headers=headers,
-        verify=False)
-
-
-# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteRepository
-def deleterepo(repo_name):
-    url = artifactory_url + 'repositories/' + repo_name
-
-    return requests.delete(
-        url,
-        auth=HTTPBasicAuth(user, password),
         verify=False)
 
 
@@ -116,6 +114,50 @@ def creategroup(group_name, group_realm):
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteGroup
 def deletegroup(group_name):
     url = artifactory_url + 'security/groups/' + group_name
+
+    return requests.delete(
+        url,
+        auth=HTTPBasicAuth(user, password),
+        verify=False)
+
+
+# ----- Repo REST API functions ----- #
+
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-RepositoryConfiguration
+def getrepo(repo_name):
+    url = artifactory_url + 'repositories/' + repo_name
+
+    return requests.get(
+        url,
+        auth=HTTPBasicAuth(user, password),
+        verify=False)
+
+
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateRepository
+def createrepo(repo_name, repo_class, repo_package):
+    '''
+    repo_type (String): local | remote | virtual
+    repo_package (String): see "repo_layout" dictionary in Variables section
+    '''
+    url = artifactory_url + 'repositories/' + repo_name
+    data = {
+        "rclass": repo_class,
+        "packageType": repo_package,
+        "repoLayoutRef": repo_layout[repo_package]
+    }
+    headers = {'Content-Type': 'application/json'}
+
+    return requests.put(
+        url,
+        auth=HTTPBasicAuth(user, password),
+        data=json.dumps(data),
+        headers=headers,
+        verify=False)
+
+
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteRepository
+def deleterepo(repo_name):
+    url = artifactory_url + 'repositories/' + repo_name
 
     return requests.delete(
         url,
