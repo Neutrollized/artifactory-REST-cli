@@ -5,8 +5,8 @@
 #
 # example usage:
 # ./artifactory-REST-cli.py --add \
-#                           --repo mynpmrepo --repo-class npm \
-#                           --group mygroup --group-perm rd \
+#                           --repo mynpmrepo --repoclass npm \
+#                           --group mygroup --groupperm rd \
 #                           --perm myperm --public
 #
 # will add a new (local) npm repository called 'mynpmrepo'
@@ -304,23 +304,23 @@ if __name__ == '__main__':
     action.add_argument('--add', action='store_true', default=False)
     action.add_argument('--delete', action='store_true', default=False)
     user = parser.add_argument_group('user')
-    user.add_argument('--user', action='store', dest="user_name", type=str)
-    user.add_argument('--user-group', action='store', dest="user_group", default='internal', type=str)
+    user.add_argument('--user', type=str)
+    user.add_argument('--usergroup', type=str)
     group = parser.add_argument_group('group')
-    group.add_argument('--group', action='store', dest="group_name", type=str)
-    group.add_argument('--group-realm', action='store', dest="group_realm", default='internal', type=str,
+    group.add_argument('--group', type=str)
+    group.add_argument('--grouprealm', default='internal', type=str,
                         help='internal | crowd | ldap')
-    group.add_argument('--group-perm', action='store', dest="group_perms", type=list,
+    group.add_argument('--groupperm', type=list,
                         help='m=manage, d=delete, w=deploy, n=annotate, r=read')
     repo = parser.add_argument_group('repository')
-    repo.add_argument('--repo', action='store', dest="repo_name", type=str)
-    repo.add_argument('--repo-class', action='store', dest="repo_class", default='local', type=str,
+    repo.add_argument('--repo', type=str)
+    repo.add_argument('--repoclass', default='local', type=str,
                         help='local | remote | virtual')
-    repo.add_argument('--repo_package', action='store', dest="repo_package", default='generic', type=str,
+    repo.add_argument('--repopackage', default='generic', type=str,
                         help='generic | maven | npm , etc.')
     perm = parser.add_argument_group('permission')
-    perm.add_argument('--perm', action='store', dest="perm_name", type=str)
-    perm.add_argument('--public', action='store_true', dest="public_read", default=False,
+    perm.add_argument('--perm', type=str)
+    perm.add_argument('--public', action='store_true', default=False,
                         help='enable public/anonymous user read')
     args = parser.parse_args()
 
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     ### TEST ###
     # action selected was --get
     if args.get:
-        g = getgroup(args.group_name)
+        g = getgroup(args.group)
         print(g.text)
 
     # action selected was --add
