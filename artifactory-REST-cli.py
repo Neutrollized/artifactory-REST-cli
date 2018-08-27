@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 #requires pypi jq and requests
+import argparse
 import json
 import re
 import requests
@@ -124,6 +125,7 @@ def deletegroup(group_name):
 
 # ----- Permissions REST API functions ----- #
 
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetPermissionTargetDetails
 def getperm(perm_name):
     url = artifactory_url + 'security/permissions/' + perm_name
 
@@ -133,9 +135,10 @@ def getperm(perm_name):
         verify=False)
 
 
-def createperm(perm_name, repo_names, group_name, group_perms, public_read):
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplacePermissionTarget
+def createperm(perm_name, repo_name, group_name, group_perms, public_read):
     '''
-    repo_names (List): list of repos that the permissions is to be applied
+    repo_name (String): list of repos that the permissions is to be applied
     group_perms (List): list of perms for the group
     public_read (Boolean): if True, anonymous users have read access
     '''
@@ -144,9 +147,12 @@ def createperm(perm_name, repo_names, group_name, group_perms, public_read):
     else:
         anonymous_perms = ['']
 
+    # make repo_name a list
+    repo_name = [repo_name]
+
     url = artifactory_url + 'security/permissions/' + perm_name
     data = {
-        "repositories": repo_names,
+        "repositories": repo_name,
         "principals": {
             "users": {
                 "anonymous": anonymous_perms
@@ -166,6 +172,7 @@ def createperm(perm_name, repo_names, group_name, group_perms, public_read):
         verify=False)
 
 
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeletePermissionTarget
 def deleteperm(perm_name):
     url = artifactory_url + 'security/permissions/' + perm_name
 
@@ -175,10 +182,14 @@ def deleteperm(perm_name):
         verify=False)
 
 
-def addtoperm(perm_name, repo_names, group_name, group_perms, public_read):
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplacePermissionTarget
+# IMPORTANT: there is no ability to simply add a new repo or group, etc to an existing perm
+#            you can only recreate.  Hence this will get the config of an existing permission
+#            and modify it before having it recreated
+def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
     '''
     perm_name (String): permission name to updated/add to
-    repo_names (List): list of repos that the permissions is to be applied
+    repo_name (String): name of repo that the permissions is to be applied
     group_name (String): group name to add to permission
     group_perms (List): list of perms for the group
     public_read (Boolean): if True, anonymous users have read access
@@ -188,11 +199,17 @@ def addtoperm(perm_name, repo_names, group_name, group_perms, public_read):
     else:
         anonymous_perms = ['']
 
-    p = getperm(perm_name)
+    repo_name = [repo_name]
 
+    p = getperm(perm_name)
     # users, groups, repos and config are dictionaries
     repos = jq(".repositories").transform(json.loads(p.text))
-    new_repos = repos + repo_names
+    # is repo_name is a subset of repos
+    if set(repo_name) <= set(repos):
+        new_repos = repos
+    else:
+        new_repos = repos + repo_name
+
     config = jq(".").transform(json.loads(p.text))
     config['repositories'] = new_repos
     # each user/group and perms are its own key:value pair
@@ -221,20 +238,29 @@ password = connection_info[2].strip('\n\r')
 
 
 createrepo('glen-generic1-local', 'generic')
-#a = getrepo('glen-generic1-local')
-#print(a.text)
-creategroup('glen-group1', 'internal')
-#b = getgroup('glen-group1')
-#print(b.text)
-createperm('glen-perm1', ['glen-generic1-local'], 'glen-group1', ['r','d'], True)
-c = getperm('glen-perm1')
-print(c.text)
+#print(getrepo('glen-generic1-local').text)
 createrepo('glen-maven1-local', 'maven')
-d = getrepo('glen-maven1-local')
-#print(d.text)
-addtoperm('glen-perm1', ['glen-maven1-local'], 'glen-group1', ['r','d', 'n'], False)
+#print(getrepo('glen-maven1-local').text)
+
+creategroup('glen-group1', 'internal')
+#print(getgroup('glen-group1').text)
+creategroup('glen-group2', 'internal')
+#print(getgroup('glen-group2').text)
+
+print('--> CREATE PERM')
+createperm('glen-perm1', 'glen-generic1-local', 'glen-group1', ['r','d'], True)
+print(getperm('glen-perm1').text)
+print('--> ADD GROUP2')
+addtoperm('glen-perm1', 'glen-generic1-local', 'glen-group2', ['m'], True)
+print(getperm('glen-perm1').text)
+print('--> ADD REPO2')
+addtoperm('glen-perm1', 'glen-maven1-local', 'glen-group2', ['r','n'], True)
+print(getperm('glen-perm1').text)
+print('--> ADD REPO2')
+addtoperm('glen-perm1', 'glen-maven1-local', '', [], False)
 e = getperm('glen-perm1')
 print(e.text)
+
 #print(e.status_code)
 #if e.status_code == 200:
 #    newgroups = jq(".principals.groups").transform(json.loads(e.text))
@@ -267,6 +293,3 @@ del_c = deleteperm('glen-perm1')
 print(del_c.text)
 del_d = deleterepo('glen-maven1-local')
 print(del_d.text)
-
-test_group = 'somename'
-test_group_perms = ['r','d']
