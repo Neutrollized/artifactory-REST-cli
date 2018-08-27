@@ -332,6 +332,12 @@ if __name__ == '__main__':
     password = connection_info[2].strip('\n\r')
 
 
+    ### TEST ###
+    # action selected was --get
+    if args.get:
+        g = getgroup(args.group_name)
+        print(g.text)
+
     # action selected was --add
     if args.add:
         print('TODO')
