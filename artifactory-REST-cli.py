@@ -55,14 +55,12 @@ def addusergroup(user_name, group_name):
 
     group_name = [group_name]
 
-    # is repo_name is a subset of repos
+    # is group_name is a subset of groups
     if set(group_name) <= set(groups):
         new_groups = groups
     else:
         new_groups = groups + group_name
 
-    print('MORE GROUPS')
-    print(new_groups)
     config = jq(".").transform(json.loads(u.text))
     config['groups'] = new_groups
 
@@ -74,6 +72,16 @@ def addusergroup(user_name, group_name):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(config),
         headers=headers,
+        verify=False)
+
+
+# https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteUser
+def deleteuser(user_name):
+    url = artifactory_url + 'security/users/' + user_name
+
+    return requests.delete(
+        url,
+        auth=HTTPBasicAuth(user, password),
         verify=False)
 
 
