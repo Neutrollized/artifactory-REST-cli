@@ -1,5 +1,22 @@
 #!/usr/bin/env python
 
+#
+# Author: Glen Yu (glen.yu@gmail.com)
+#
+# example usage:
+# ./artifactory-REST-cli.py --add \
+#                           --repo mynpmrepo --repo-class npm \
+#                           --group mygroup --group-perm rd \
+#                           --perm myperm --public
+#
+# will add a new (local) npm repository called 'mynpmrepo'
+# create a new (internal) group called 'mygroup' 
+# assign it the permission set 'myperm'
+# 'myperm' dictates that 'mygroup' will have read(r) and delete(d) perms in the repo 'mynpmrepo'
+# anonymous users will have read access to that repository
+#
+
+
 #requires pypi jq and requests
 import argparse
 import json
@@ -50,7 +67,6 @@ def getuser(user_name):
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-UpdateUser
 def addusergroup(user_name, group_name):
     u = getuser(user_name)
-    # users, groups, repos and config are dictionaries
     groups = jq(".groups").transform(json.loads(u.text))
 
     group_name = [group_name]
@@ -280,51 +296,42 @@ def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
 
 # ----- MAIN ----- #
 
-connection_info = readcreds()
-hostname = connection_info[0].strip('\n\r')
-artifactory_url = 'https://' + hostname + '/artifactory/api/'
-user = connection_info[1].strip('\n\r')
-password = connection_info[2].strip('\n\r')
+if __name__ == '__main__':
+    # parse command line arguments
+    parser = argparse.ArgumentParser()
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument('--get', action='store_true', default=False)
+    action.add_argument('--add', action='store_true', default=False)
+    action.add_argument('--delete', action='store_true', default=False)
+    user = parser.add_argument_group('user')
+    user.add_argument('--user', action='store', dest="user_name", type=str)
+    user.add_argument('--user-group', action='store', dest="user_group", default='internal', type=str)
+    group = parser.add_argument_group('group')
+    group.add_argument('--group', action='store', dest="group_name", type=str)
+    group.add_argument('--group-realm', action='store', dest="group_realm", default='internal', type=str,
+                        help='internal | crowd | ldap')
+    group.add_argument('--group-perm', action='store', dest="group_perms", type=list,
+                        help='m=manage, d=delete, w=deploy, n=annotate, r=read')
+    repo = parser.add_argument_group('repository')
+    repo.add_argument('--repo', action='store', dest="repo_name", type=str)
+    repo.add_argument('--repo-class', action='store', dest="repo_class", default='local', type=str,
+                        help='local | remote | virtual')
+    repo.add_argument('--repo_package', action='store', dest="repo_package", default='generic', type=str,
+                        help='generic | maven | npm , etc.')
+    perm = parser.add_argument_group('permission')
+    perm.add_argument('--perm', action='store', dest="perm_name", type=str)
+    perm.add_argument('--public', action='store_true', dest="public_read", default=False,
+                        help='enable public/anonymous user read')
+    args = parser.parse_args()
+
+    # get connection info
+    connection_info = readcreds()
+    hostname = connection_info[0].strip('\n\r')
+    artifactory_url = 'https://' + hostname + '/artifactory/api/'
+    user = connection_info[1].strip('\n\r')
+    password = connection_info[2].strip('\n\r')
 
 
-
-
-# ---- TESTING ----- #
-a=createrepo('glen-generic1-local', 'local', 'generic')
-print(a.text)
-print(a.status_code)
-getrepo('glen-generic1-local')
-print(getrepo('glen-generic1-local').text)
-b=createrepo('glen-generic1-local', 'local', 'generic')
-print(b.text)
-print(b.status_code)
-createrepo('glen-maven1-local', 'local', 'maven')
-#print(getrepo('glen-maven1-local').text)
-
-creategroup('glen-group1', 'internal')
-#print(getgroup('glen-group1').text)
-creategroup('glen-group2', 'internal')
-#print(getgroup('glen-group2').text)
-
-print('--> CREATE PERM')
-createperm('glen-perm1', 'glen-generic1-local', 'glen-group1', ['r','d'], True)
-print(getperm('glen-perm1').text)
-print('--> ADD GROUP2')
-addtoperm('glen-perm1', 'glen-generic1-local', 'glen-group2', ['m'], True)
-print(getperm('glen-perm1').text)
-print('--> ADD REPO2')
-addtoperm('glen-perm1', 'glen-maven1-local', 'glen-group2', ['r','n'], True)
-print(getperm('glen-perm1').text)
-print('--> ADD REPO2')
-addtoperm('glen-perm1', 'glen-maven1-local', '', [], False)
-e = getperm('glen-perm1')
-print(e.text)
-
-del_a = deleterepo('glen-generic1-local')
-print(del_a.text)
-del_b = deletegroup('glen-group1')
-print(del_b.text)
-del_c = deleteperm('glen-perm1')
-print(del_c.text)
-del_d = deleterepo('glen-maven1-local')
-print(del_d.text)
+    # action selected was --add
+    if args.add:
+        print('TODO')
