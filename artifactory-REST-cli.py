@@ -3,7 +3,6 @@
 #requires pypi jq and requests
 import argparse
 import json
-import re
 import requests
 from jq import jq
 from requests.auth import HTTPBasicAuth
@@ -11,7 +10,8 @@ from requests.auth import HTTPBasicAuth
 
 # ----- Variables
 
-package_layout = {
+# https://www.jfrog.com/confluence/display/RTF/Repository+Layouts
+repo_layout = {
     'generic': 'simple-default',
     'bower': 'bower-default',
     'docker': 'simple-default',
@@ -23,13 +23,6 @@ package_layout = {
     'rpm': 'simple-default',
     'ruby': 'simple-default',
     'vagrant': 'simple-default'}
-
-permissions = {
-    'manage': 'm',
-    'delete': 'd',
-    'deploy': 'w',
-    'annotate': 'n',
-    'read': 'r'}
 
 
 # ----- Get password/API key ----- #
@@ -55,12 +48,16 @@ def getrepo(repo_name):
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateRepository
-def createrepo(repo_name, package_type):
+def createrepo(repo_name, repo_class, repo_package):
+    '''
+    repo_type (String): local | remote | virtual
+    repo_package (String): see "repo_layout" dictionary in Variables section
+    '''
     url = artifactory_url + 'repositories/' + repo_name
     data = {
-        "rclass": "local",
-        "packageType": package_type,
-        "repoLayoutRef": package_layout[package_type]
+        "rclass": repo_class,
+        "packageType": repo_package,
+        "repoLayoutRef": repo_layout[repo_package]
     }
     headers = {'Content-Type': 'application/json'}
 
@@ -96,11 +93,14 @@ def getgroup(group_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceGroup
 # realm_type: internal | ldap
-def creategroup(group_name, realm_type):
+def creategroup(group_name, group_realm):
+    '''
+    group_realm (String): local | crowd | ldap
+    '''
     url = artifactory_url + 'security/groups/' + group_name
     data = {
         "autoJoin": "false",
-        "realm": realm_type,
+        "realm": group_realm,
         "adminPrivileges": "false"
     }
     headers = {'Content-Type': 'application/json'}
@@ -237,9 +237,18 @@ user = connection_info[1].strip('\n\r')
 password = connection_info[2].strip('\n\r')
 
 
-createrepo('glen-generic1-local', 'generic')
-#print(getrepo('glen-generic1-local').text)
-createrepo('glen-maven1-local', 'maven')
+
+
+# ---- TESTING ----- #
+a=createrepo('glen-generic1-local', 'local', 'generic')
+print(a.text)
+print(a.status_code)
+getrepo('glen-generic1-local')
+print(getrepo('glen-generic1-local').text)
+b=createrepo('glen-generic1-local', 'local', 'generic')
+print(b.text)
+print(b.status_code)
+createrepo('glen-maven1-local', 'local', 'maven')
 #print(getrepo('glen-maven1-local').text)
 
 creategroup('glen-group1', 'internal')
@@ -260,30 +269,6 @@ print('--> ADD REPO2')
 addtoperm('glen-perm1', 'glen-maven1-local', '', [], False)
 e = getperm('glen-perm1')
 print(e.text)
-
-#print(e.status_code)
-#if e.status_code == 200:
-#    newgroups = jq(".principals.groups").transform(json.loads(e.text))
-#    print(newgroups)
-#    newlist = jq(".repositories").transform(json.loads(e.text))
-#    print(newlist)
-#    existing_config = jq(".").transform(json.loads(e.text))
-#    print('COMBINED LIST')
-#    blah = newlist + ['glen-maven1-local']
-#    print(blah)
-#    print('EXISTING_CONFIG')
-#    print(type(existing_config))
-#    print(existing_config)
-#    print('DICT REPLACE')
-#    for key in existing_config.keys():
-#      print(key) 
-#    print('HERE')
-#    print(existing_config['principals']['groups'])
-#    existing_config['repositories'] = blah
-#    print(blah)
-#    print(existing_config)
-# elif e.status_code == 404 # Not found
-#     print('perm not found!')
 
 del_a = deleterepo('glen-generic1-local')
 print(del_a.text)
