@@ -307,10 +307,11 @@ if __name__ == '__main__':
     action.add_argument('--add', action='store_true', default=False)
     action.add_argument('--delete', action='store_true', default=False)
     login = parser.add_argument_group('login')
-    login.add_argument('--cred', default='/tmp/.artifactory_info', type=str)
-    login.add_argument('-s', type=str)
-    login.add_argument('-u', type=str)
-    login.add_argument('-p', type=str)
+    login.add_argument('--cred', default='/tmp/.artifactory_info', type=str,
+                        help='credentials file for Artifactory login containing servername, username and password')
+    login.add_argument('-s', type=str, help='Artifactory server name')
+    login.add_argument('-u', type=str, help='Artifactory login username')
+    login.add_argument('-p', type=str, help='Artifactory login password')
     user = parser.add_argument_group('user')
     user.add_argument('--user', type=str)
     user.add_argument('--usergroup', type=str)
@@ -347,12 +348,15 @@ if __name__ == '__main__':
 
     # action selected was --add
     if args.get:
-        gr = getrepo(args.repo)
-        print(gr.text)
-        gg = getgroup(args.group)
-        print(gg.text)
-        gp = getperm(args.perm)
-        print(gp.text)
+        if args.repo != None:
+            gr = getrepo(args.repo)
+            print(gr.text)
+        elif args.repo != None:
+            gg = getgroup(args.group)
+            print(gg.text)
+        elif args.repo != None:
+            gp = getperm(args.perm)
+            print(gp.text)
 
 
     # action selected was --add
@@ -383,6 +387,13 @@ if __name__ == '__main__':
 
 
     # action selected was --delete
-    #if args.delete:
-    #    dr = deleterepo(args.repo)
-    #    print(dr.text)
+    if args.delete:
+        if args.repo != None:
+            dr = deleterepo(args.repo)
+            print(dr.text)
+        elif args.repo != None:
+            dg = deletegroup(args.group)
+            print(dg.text)
+        elif args.repo != None:
+            dp = deleteperm(args.perm)
+            print(dp.text)
