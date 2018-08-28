@@ -14,12 +14,12 @@ You will need Python 2.7 and the following [PyPI](https://pypi.org) packages:
 ### Example
 
 Command
-'''
+```
 ./artifactory-REST-cli.py --add --repo myrepo --repopackage npm --group mygroup --perm mypermissions --groupperm rd
-'''
+```
 
 Output
-'''
+```
 CREATE REPOSITORY...
 CREATE GROUP...
 CREATE PERMISSIONS...
@@ -34,7 +34,7 @@ CREATE PERMISSIONS...
     }
   }
 }
-'''
+```
 
 
 ## Notes
