@@ -7,8 +7,8 @@ CLI written in Python to supplement what the [jfrog-cli](https://jfrog.com/getcl
 ## Requirements
 
 You will need Python 2.7 and the following [PyPI](https://pypi.org) packages:
-* jq
-* requests 
+* [jq](https://pypi.org/project/jq/)
+* [requests](https://pypi.org/project/requests/)
 
 
 ### Example
@@ -39,6 +39,6 @@ CREATE PERMISSIONS...
 
 ## Notes
 
-There's very little error checking/input validation as I developed this mainly for use at work which uses Rundeck to call this script and values passed to it will be selected from dropdowns so very little can go wrong.  I will work on this to add more functionality and robustness as a standalone cli script.
+There's very little error checking/input validation as I developed this mainly for use at work which uses [Rundeck](https://www.rundeck.com/) to call this script and values passed to it will be selected from dropdowns so very little can go wrong.  I will work on this to add more functionality and robustness as a standalone cli script.
 
 ### PRs welcome!
