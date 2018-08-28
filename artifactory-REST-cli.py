@@ -346,7 +346,7 @@ if __name__ == '__main__':
         password = connection_info[2].strip('\n\r')
 
 
-    # action selected was --add
+    # action selected was --get
     if args.get:
         if args.user != None:
             gu = getuser(args.user)

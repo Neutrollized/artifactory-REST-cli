@@ -11,6 +11,53 @@ You will need Python 2.7 and the following [PyPI](https://pypi.org) packages:
 * [requests](https://pypi.org/project/requests/)
 
 
+## Usage/--help
+```
+usage: artifactory-REST-cli.py [-h] (--get | --add | --delete) [--cred CRED]
+                               [-s S] [-u U] [-p P] [--user USER]
+                               [--usergroup USERGROUP] [--group GROUP]
+                               [--grouprealm GROUPREALM] [--repo REPO]
+                               [--repoclass REPOCLASS]
+                               [--repopackage REPOPACKAGE] [--perm PERM]
+                               [--groupperm GROUPPERM] [--public]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --get
+  --add
+  --delete
+
+login:
+  --cred CRED           credentials file for Artifactory login containing
+                        servername, username and password
+  -s S                  Artifactory server name
+  -u U                  Artifactory login username
+  -p P                  Artifactory login password
+
+user:
+  --user USER
+  --usergroup USERGROUP
+
+group:
+  --group GROUP
+  --grouprealm GROUPREALM
+                        internal | crowd | ldap
+
+repository:
+  --repo REPO
+  --repoclass REPOCLASS
+                        local | remote | virtual
+  --repopackage REPOPACKAGE
+                        generic | maven | npm , etc.
+
+permission:
+  --perm PERM
+  --groupperm GROUPPERM
+                        m=manage, d=delete, w=deploy, n=annotate, r=read
+  --public              enable public/anonymous user read
+```
+
+
 ### Example
 
 Command
