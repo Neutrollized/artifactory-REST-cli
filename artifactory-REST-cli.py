@@ -348,39 +348,52 @@ if __name__ == '__main__':
 
     # action selected was --add
     if args.get:
-        if args.repo != None:
-            gr = getrepo(args.repo)
-            print(gr.text)
-        elif args.repo != None:
+        if args.user != None:
+            gu = getuser(args.user)
+            print(gu.text)
+        elif args.group != None:
             gg = getgroup(args.group)
             print(gg.text)
         elif args.repo != None:
+            gr = getrepo(args.repo)
+            print(gr.text)
+        elif args.perm != None:
             gp = getperm(args.perm)
             print(gp.text)
 
 
     # action selected was --add
-    if args.add:
+    if args.add and args.user != None and args.usergroup != None:
+        gu = getuser(args.user)
+        gg = getgroup(args.usergroup)
+        if gu.status_code == 200 and gg.status_code == 200:    # user and group exists exists
+            print('ADDING GROUP ' + args.usergroup + ' TO USER ' + args.user)
+            addusergroup(args.user, args.usergroup)
+            gu = getuser(args.user)
+            print(gu.text)
+        elif gu.status_code == 404 or gg.status_code == 404:
+            print('USER and/or GROUP DOES NOT EXIST')
+    elif args.add:
         gr = getrepo(args.repo)
         if gr.status_code == 400:    # create new repo 
-            print('CREATE REPOSITORY...')
+            print('CREATE REPOSITORY ' + args.repo)
             cr = createrepo(args.repo, args.repoclass, args.repopackage)
             print(cr.text)
         
         gg = getgroup(args.group)
         if gg.status_code == 404:    # create new group
-            print('CREATE GROUP...')
+            print('CREATE GROUP ' + args.group)
             cg = creategroup(args.group, args.grouprealm)
             print(cg.text)
 
         gp = getperm(args.perm)
         if gp.status_code == 404:    # create new perm entry
-            print('CREATE PERMISSIONS...')
+            print('CREATE PERMISSIONS ' + args.perm)
             cp = createperm(args.perm, args.repo, args.group, args.groupperm, args.public)
             gp = getperm(args.perm)
             print(gp.text)
         elif gp.status_code == 200:    # perm already exists, modify existing
-            print('UPDATE PERMISSIONS...')
+            print('UPDATE PERMISSIONS ' + args.perm)
             cp = addtoperm(args.perm, args.repo, args.group, args.groupperm, args.public)
             gp = getperm(args.perm)
             print(gp.text)
@@ -389,11 +402,14 @@ if __name__ == '__main__':
     # action selected was --delete
     if args.delete:
         if args.repo != None:
+            print('DELETE REPOSITORY ' + args.repo)
             dr = deleterepo(args.repo)
             print(dr.text)
-        elif args.repo != None:
+        elif args.group != None:
+            print('DELETE GROUP ' + args.group)
             dg = deletegroup(args.group)
             print(dg.text)
-        elif args.repo != None:
+        elif args.perm != None:
+            print('DELETE PERMISSIONS ' + args.perm)
             dp = deleteperm(args.perm)
             print(dp.text)
