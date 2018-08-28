@@ -47,8 +47,8 @@ repo_layout = {
 
 # ----- Get password/API key ----- #
 
-def readcreds():
-    pw_file = '/tmp/.artifactory_info'
+def readcreds(credential_file):
+    pw_file = credential_file
     f = open(pw_file, "r")
     contents = f.readlines()
 
@@ -306,6 +306,11 @@ if __name__ == '__main__':
     action.add_argument('--get', action='store_true', default=False)
     action.add_argument('--add', action='store_true', default=False)
     action.add_argument('--delete', action='store_true', default=False)
+    login = parser.add_argument_group('login')
+    login.add_argument('--cred', default='/tmp/.artifactory_info', type=str)
+    login.add_argument('-s', type=str)
+    login.add_argument('-u', type=str)
+    login.add_argument('-p', type=str)
     user = parser.add_argument_group('user')
     user.add_argument('--user', type=str)
     user.add_argument('--usergroup', type=str)
@@ -328,11 +333,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # get connection info
-    connection_info = readcreds()
-    hostname = connection_info[0].strip('\n\r')
-    artifactory_url = 'https://' + hostname + '/artifactory/api/'
-    user = connection_info[1].strip('\n\r')
-    password = connection_info[2].strip('\n\r')
+    if args.s != None and args.u != None and args.p != None: 
+        artifactory_url = 'https://' + args.s + '/artifactory/api/'
+        user = args.u
+        password = args.p
+    else:
+        connection_info = readcreds(args.cred)
+        hostname = connection_info[0].strip('\n\r')
+        artifactory_url = 'https://' + hostname + '/artifactory/api/'
+        user = connection_info[1].strip('\n\r')
+        password = connection_info[2].strip('\n\r')
 
 
     # action selected was --add
@@ -343,6 +353,7 @@ if __name__ == '__main__':
         print(gg.text)
         gp = getperm(args.perm)
         print(gp.text)
+
 
     # action selected was --add
     if args.add:
@@ -369,3 +380,9 @@ if __name__ == '__main__':
             cp = addtoperm(args.perm, args.repo, args.group, args.groupperm, args.public)
             gp = getperm(args.perm)
             print(gp.text)
+
+
+    # action selected was --delete
+    #if args.delete:
+    #    dr = deleterepo(args.repo)
+    #    print(dr.text)
