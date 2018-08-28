@@ -28,6 +28,8 @@ from requests.auth import HTTPBasicAuth
 
 # ----- Variables
 
+verify_ssl = False
+
 # https://www.jfrog.com/confluence/display/RTF/Repository+Layouts
 repo_layout = {
     'generic': 'simple-default',
@@ -62,7 +64,7 @@ def getuser(user_name):
     return requests.get(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-UpdateUser
@@ -89,7 +91,7 @@ def addusergroup(user_name, group_name):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(config),
         headers=headers,
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteUser
@@ -99,7 +101,7 @@ def deleteuser(user_name):
     return requests.delete(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # ----- Groups REST API functions ----- #
@@ -111,7 +113,7 @@ def getgroup(group_name):
     return requests.get(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplaceGroup
@@ -133,7 +135,7 @@ def creategroup(group_name, group_realm):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(data),
         headers=headers,
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteGroup
@@ -143,7 +145,7 @@ def deletegroup(group_name):
     return requests.delete(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # ----- Repo REST API functions ----- #
@@ -155,7 +157,7 @@ def getrepo(repo_name):
     return requests.get(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateRepository
@@ -177,7 +179,7 @@ def createrepo(repo_name, repo_class, repo_package):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(data),
         headers=headers,
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteRepository
@@ -187,7 +189,7 @@ def deleterepo(repo_name):
     return requests.delete(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # ----- Permissions REST API functions ----- #
@@ -199,7 +201,7 @@ def getperm(perm_name):
     return requests.get(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplacePermissionTarget
@@ -236,7 +238,7 @@ def createperm(perm_name, repo_name, group_name, group_perms, public_read):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(data),
         headers=headers,
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeletePermissionTarget
@@ -246,7 +248,7 @@ def deleteperm(perm_name):
     return requests.delete(
         url,
         auth=HTTPBasicAuth(user, password),
-        verify=False)
+        verify=verify_ssl)
 
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-CreateorReplacePermissionTarget
@@ -291,7 +293,7 @@ def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
         auth=HTTPBasicAuth(user, password),
         data=json.dumps(config),
         headers=headers,
-        verify=False)
+        verify=verify_ssl)
 
 
 
@@ -344,15 +346,13 @@ if __name__ == '__main__':
 
     # action selected was --add
     if args.add:
-        print(args.repo, args.repoclass, args.repopackage)
-        print(args.group, args.grouprealm) 
-        print(args.perm, args.groupperm, args.public)
-
+        print('CREATE REPOSITORY...')
         gr = getrepo(args.repo)
         if gr.status_code == 400:    # create new repo 
             cr = createrepo(args.repo, args.repoclass, args.repopackage)
             print(cr.text)
         
+        print('CREATE GROUP...')
         gg = getgroup(args.group)
         if gg.status_code == 404:    # create new group
             cg = creategroup(args.group, args.grouprealm)
@@ -360,8 +360,12 @@ if __name__ == '__main__':
 
         gp = getperm(args.perm)
         if gp.status_code == 404:    # create new perm entry
+            print('CREATE PERMISSIONS...')
             cp = createperm(args.perm, args.repo, args.group, args.groupperm, args.public)
-            print(cp.text)
+            gp = getperm(args.perm)
+            print(gp.text)
         elif gp.status_code == 200:    # perm already exists, modify existing
+            print('UPDATE PERMISSIONS...')
             cp = addtoperm(args.perm, args.repo, args.group, args.groupperm, args.public)
-            print(cp.text)
+            gp = getperm(args.perm)
+            print(gp.text)
