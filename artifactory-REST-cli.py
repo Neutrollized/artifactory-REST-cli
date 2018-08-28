@@ -346,15 +346,15 @@ if __name__ == '__main__':
 
     # action selected was --add
     if args.add:
-        print('CREATE REPOSITORY...')
         gr = getrepo(args.repo)
         if gr.status_code == 400:    # create new repo 
+            print('CREATE REPOSITORY...')
             cr = createrepo(args.repo, args.repoclass, args.repopackage)
             print(cr.text)
         
-        print('CREATE GROUP...')
         gg = getgroup(args.group)
         if gg.status_code == 404:    # create new group
+            print('CREATE GROUP...')
             cg = creategroup(args.group, args.grouprealm)
             print(cg.text)
 
