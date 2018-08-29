@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Login info can be passed as commandline argumentments (with `-s servername -u username -p password`)
 - Credentials file for logging in can also be specified from commandline (with `--cred /path/to/file`)
 - Functionality added for `--get`, `--add` and `--delete` actions
+- Disabled `InsecureRequestWarning` warnings when SSL verification is disabled (`verify_ssl = False`)
 ### Fixed
 - Some typos and incorrect variable references (the risks of cutting/pasting)
 
