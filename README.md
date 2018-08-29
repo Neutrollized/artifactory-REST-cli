@@ -9,6 +9,7 @@ CLI written in Python to supplement what the [jfrog-cli](https://jfrog.com/getcl
 You will need Python 2.7 and the following [PyPI](https://pypi.org) packages:
 * [jq](https://pypi.org/project/jq/)
 * [requests](https://pypi.org/project/requests/)
+* [urllib3](https://pypi.org/project/urllib3/)
 
 or just run `pip install -r requirements.txt` 
 
