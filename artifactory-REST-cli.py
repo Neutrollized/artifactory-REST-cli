@@ -191,7 +191,6 @@ def deleterepo(repo_name):
     return requests.delete(
         url,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
-        auth=HTTPBasicAuth(user, password),
         verify=verify_ssl)
 
 
