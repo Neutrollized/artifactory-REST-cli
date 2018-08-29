@@ -18,17 +18,19 @@
 #
 
 
-#requires pypi jq and requests
+#requires PyPI jq and requests
 import argparse
 import json
-import requests
+import requests, urllib3
 from jq import jq
 from requests.auth import HTTPBasicAuth
 
 
-# ----- Variables
+# ----- Variables/Settings ----- #
 
 verify_ssl = False
+# disable the InsecureRequestWarning that warns about unverified HTTPS requests
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # https://www.jfrog.com/confluence/display/RTF/Repository+Layouts
 repo_layout = {
