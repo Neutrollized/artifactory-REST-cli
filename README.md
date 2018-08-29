@@ -10,6 +10,8 @@ You will need Python 2.7 and the following [PyPI](https://pypi.org) packages:
 * [jq](https://pypi.org/project/jq/)
 * [requests](https://pypi.org/project/requests/)
 
+or just run `pip install -r requirements.txt` 
+
 
 ## Usage/--help
 ```
