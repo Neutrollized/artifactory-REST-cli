@@ -65,7 +65,7 @@ def getuser(user_name):
 
     return requests.get(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -90,7 +90,7 @@ def addusergroup(user_name, group_name):
 
     return requests.post(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(config),
         headers=headers,
         verify=verify_ssl)
@@ -102,7 +102,7 @@ def deleteuser(user_name):
 
     return requests.delete(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -114,7 +114,7 @@ def getgroup(group_name):
 
     return requests.get(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -134,7 +134,7 @@ def creategroup(group_name, group_realm):
 
     return requests.put(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
         verify=verify_ssl)
@@ -146,7 +146,7 @@ def deletegroup(group_name):
 
     return requests.delete(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -158,7 +158,7 @@ def getrepo(repo_name):
 
     return requests.get(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -178,7 +178,7 @@ def createrepo(repo_name, repo_class, repo_package):
 
     return requests.put(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
         verify=verify_ssl)
@@ -190,6 +190,7 @@ def deleterepo(repo_name):
 
     return requests.delete(
         url,
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         auth=HTTPBasicAuth(user, password),
         verify=verify_ssl)
 
@@ -202,7 +203,7 @@ def getperm(perm_name):
 
     return requests.get(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -237,7 +238,7 @@ def createperm(perm_name, repo_name, group_name, group_perms, public_read):
 
     return requests.put(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
         verify=verify_ssl)
@@ -249,7 +250,7 @@ def deleteperm(perm_name):
 
     return requests.delete(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
 
@@ -292,7 +293,7 @@ def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
 
     return requests.put(
         url,
-        auth=HTTPBasicAuth(user, password),
+        auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(config),
         headers=headers,
         verify=verify_ssl)
@@ -338,14 +339,14 @@ if __name__ == '__main__':
     # get connection info
     if args.s != None and args.u != None and args.p != None: 
         artifactory_url = 'https://' + args.s + '/artifactory/api/'
-        user = args.u
-        password = args.p
+        artifactory_user = args.u
+        artifactory_password = args.p
     else:
         connection_info = readcreds(args.cred)
         hostname = connection_info[0].strip('\n\r')
         artifactory_url = 'https://' + hostname + '/artifactory/api/'
-        user = connection_info[1].strip('\n\r')
-        password = connection_info[2].strip('\n\r')
+        artifactory_user = connection_info[1].strip('\n\r')
+        artifactory_password = connection_info[2].strip('\n\r')
 
 
     # action selected was --get

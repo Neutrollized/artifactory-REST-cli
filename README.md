@@ -58,7 +58,7 @@ permission:
 ```
 
 
-### Example
+## Example
 
 Command
 ```
@@ -81,6 +81,11 @@ CREATE PERMISSIONS...
     }
   }
 }
+```
+
+### Docker Container Usage Example
+```
+docker run -it --rm -v /tmp/mycredentialsfile:/mnt/artifactory_info neutrollized/artifactory-rest-cli:0.1.1 --cred /mnt/artifactory_info --get --user glen 
 ```
 
 
