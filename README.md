@@ -1,6 +1,10 @@
 [![Code Climate](https://codeclimate.com/github/Neutrollized/artifactory-REST-cli.png)](https://codeclimate.com/github/Neutrollized/artifactory-REST-cli)
 
-# artifactory-REST-cli
+# Artifactory REST CLI
+[![GitHub release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/Neutrollized/artifactory-REST-cli/releases)
+
+### [CHANGELOG](https://github.com/Neutrollized/artifactory-REST-cli/blob/master/CHANGELOG.md)
+
 CLI written in Python to supplement what the [jfrog-cli](https://jfrog.com/getcli/) can't do at the moment (mainly repo creation, groups, etc.)
 
 
@@ -15,6 +19,8 @@ or just run `pip install -r requirements.txt`
 
 
 ## Usage/--help
+You can run either the `.py` script or the `.pyc` compiled binary but given the simplicity of this script, you're not going to notice any performance differences.
+
 ```
 usage: artifactory-REST-cli.py [-h] (--get | --add | --delete) [--cred CRED]
                                [-s S] [-u U] [-p P] [--user USER]
@@ -93,6 +99,8 @@ docker run -it --rm -v /tmp/mycredentialsfile:/mnt/artifactory_info neutrollized
 
 
 ## Notes
+
+A lot of the functionality provided by this script is only supported in the Pro version of [JFrog's Artifactory](https://jfrog.com/artifactory/)
 
 There's very little error checking/input validation as I developed this mainly for use at work which uses [Rundeck](https://www.rundeck.com/) to call this script and values passed to it will be selected from dropdowns so very little can go wrong.  I will work on this to add more functionality and robustness as a standalone cli script.
 
