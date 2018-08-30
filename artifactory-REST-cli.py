@@ -57,6 +57,19 @@ def readcreds(credential_file):
     return contents
 
 
+# ----- Helper functions ----- #
+
+def issubset(list1, list2):
+    '''
+    if list1 is a subset of list2, return list2
+    else return combined list (list1 + list2)
+    '''
+    if set(list1) <= set(list2):
+        return list2
+    else:
+        return list1 + list2
+
+
 # ----- Users REST API functions ----- #
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetUserDetails
@@ -71,16 +84,13 @@ def getuser(user_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-UpdateUser
 def addusergroup(user_name, group_name):
+    '''
+    makes user_name a member of group_name
+    '''
     u = getuser(user_name)
     groups = jq(".groups").transform(json.loads(u.text))
-
     group_name = [group_name]
-
-    # is group_name is a subset of groups
-    if set(group_name) <= set(groups):
-        new_groups = groups
-    else:
-        new_groups = groups + group_name
+    new_groups = issubset(group_name, groups)
 
     config = jq(".").transform(json.loads(u.text))
     config['groups'] = new_groups
@@ -275,11 +285,7 @@ def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
     p = getperm(perm_name)
     # users, groups, repos and config are dictionaries
     repos = jq(".repositories").transform(json.loads(p.text))
-    # is repo_name is a subset of repos
-    if set(repo_name) <= set(repos):
-        new_repos = repos
-    else:
-        new_repos = repos + repo_name
+    new_repos = issubset(repo_name, repos)
 
     config = jq(".").transform(json.loads(p.text))
     config['repositories'] = new_repos
