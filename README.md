@@ -1,7 +1,7 @@
 [![Code Climate](https://codeclimate.com/github/Neutrollized/artifactory-REST-cli.png)](https://codeclimate.com/github/Neutrollized/artifactory-REST-cli)
 
 # Artifactory REST CLI
-[![GitHub release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/Neutrollized/artifactory-REST-cli/releases)
+[![GitHub release](https://img.shields.io/badge/release-v0.1.2-blue.svg)](https://github.com/Neutrollized/artifactory-REST-cli/releases)
 
 ### [CHANGELOG](https://github.com/Neutrollized/artifactory-REST-cli/blob/master/CHANGELOG.md)
 
@@ -94,7 +94,11 @@ CREATE PERMISSIONS...
 
 ### Docker Container Usage Example
 ```
-docker run -it --rm -v /tmp/mycredentialsfile:/mnt/artifactory_info neutrollized/artifactory-rest-cli:0.1.1 --cred /mnt/artifactory_info --get --user glen 
+docker run -it --rm -v /tmp/mycredentialsfile:/mnt/artifactory_info neutrollized/artifactory-rest-cli:0.1.2 --cred /mnt/artifactory_info --get --user glen 
+```
+or
+```
+docker run -it --rm neutrollized/artifactory-rest-cli:0.1.2 --cred /mnt/artifactory_info -s myartifactoryserver -u admin -p abc123 --get --user glen 
 ```
 
 
