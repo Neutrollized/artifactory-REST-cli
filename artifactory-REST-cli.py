@@ -74,10 +74,8 @@ def issubset(list1, list2):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetUserDetails
 def getuser(user_name):
-    url = artifactory_url + 'security/users/' + user_name
-
     return requests.get(
-        url,
+        artifactory_url + 'security/users/' + user_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -95,11 +93,10 @@ def addusergroup(user_name, group_name):
     config = jq(".").transform(json.loads(u.text))
     config['groups'] = new_groups
 
-    url = artifactory_url + 'security/users/' + user_name
     headers = {'Content-Type': 'application/json'}
 
     return requests.post(
-        url,
+        artifactory_url + 'security/users/' + user_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(config),
         headers=headers,
@@ -108,10 +105,8 @@ def addusergroup(user_name, group_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteUser
 def deleteuser(user_name):
-    url = artifactory_url + 'security/users/' + user_name
-
     return requests.delete(
-        url,
+        artifactory_url + 'security/users/' + user_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -120,10 +115,8 @@ def deleteuser(user_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetGroupDetails
 def getgroup(group_name):
-    url = artifactory_url + 'security/groups/' + group_name
-
     return requests.get(
-        url,
+        artifactory_url + 'security/groups/' + group_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -134,7 +127,6 @@ def creategroup(group_name, group_realm):
     '''
     group_realm (String): local | crowd | ldap
     '''
-    url = artifactory_url + 'security/groups/' + group_name
     data = {
         "autoJoin": "false",
         "realm": group_realm,
@@ -143,7 +135,7 @@ def creategroup(group_name, group_realm):
     headers = {'Content-Type': 'application/json'}
 
     return requests.put(
-        url,
+        artifactory_url + 'security/groups/' + group_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
@@ -152,10 +144,8 @@ def creategroup(group_name, group_realm):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteGroup
 def deletegroup(group_name):
-    url = artifactory_url + 'security/groups/' + group_name
-
     return requests.delete(
-        url,
+        artifactory_url + 'security/groups/' + group_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -164,10 +154,8 @@ def deletegroup(group_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-RepositoryConfiguration
 def getrepo(repo_name):
-    url = artifactory_url + 'repositories/' + repo_name
-
     return requests.get(
-        url,
+        artifactory_url + 'repositories/' + repo_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -178,7 +166,6 @@ def createrepo(repo_name, repo_class, repo_package):
     repo_type (String): local | remote | virtual
     repo_package (String): see "repo_layout" dictionary in Variables section
     '''
-    url = artifactory_url + 'repositories/' + repo_name
     data = {
         "rclass": repo_class,
         "packageType": repo_package,
@@ -187,7 +174,7 @@ def createrepo(repo_name, repo_class, repo_package):
     headers = {'Content-Type': 'application/json'}
 
     return requests.put(
-        url,
+        artifactory_url + 'repositories/' + repo_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
@@ -196,10 +183,8 @@ def createrepo(repo_name, repo_class, repo_package):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeleteRepository
 def deleterepo(repo_name):
-    url = artifactory_url + 'repositories/' + repo_name
-
     return requests.delete(
-        url,
+        artifactory_url + 'repositories/' + repo_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -208,10 +193,8 @@ def deleterepo(repo_name):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-GetPermissionTargetDetails
 def getperm(perm_name):
-    url = artifactory_url + 'security/permissions/' + perm_name
-
     return requests.get(
-        url,
+        artifactory_url + 'security/permissions/' + perm_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -231,7 +214,6 @@ def createperm(perm_name, repo_name, group_name, group_perms, public_read):
     # make repo_name a list
     repo_name = [repo_name]
 
-    url = artifactory_url + 'security/permissions/' + perm_name
     data = {
         "repositories": repo_name,
         "principals": {
@@ -246,7 +228,7 @@ def createperm(perm_name, repo_name, group_name, group_perms, public_read):
     headers = {'Content-Type': 'application/json'}
 
     return requests.put(
-        url,
+        artifactory_url + 'security/permissions/' + perm_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(data),
         headers=headers,
@@ -255,10 +237,8 @@ def createperm(perm_name, repo_name, group_name, group_perms, public_read):
 
 # https://www.jfrog.com/confluence/display/RTF/Artifactory+REST+API#ArtifactoryRESTAPI-DeletePermissionTarget
 def deleteperm(perm_name):
-    url = artifactory_url + 'security/permissions/' + perm_name
-
     return requests.delete(
-        url,
+        artifactory_url + 'security/permissions/' + perm_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         verify=verify_ssl)
 
@@ -293,11 +273,10 @@ def addtoperm(perm_name, repo_name, group_name, group_perms, public_read):
     config['principals']['users'] = {'anonymous': anonymous_perms}
     config['principals']['groups'][group_name] = group_perms
 
-    url = artifactory_url + 'security/permissions/' + perm_name
     headers = {'Content-Type': 'application/json'}
 
     return requests.put(
-        url,
+        artifactory_url + 'security/permissions/' + perm_name,
         auth=HTTPBasicAuth(artifactory_user, artifactory_password),
         data=json.dumps(config),
         headers=headers,
@@ -340,6 +319,7 @@ if __name__ == '__main__':
     perm.add_argument('--public', action='store_true', default=False,
                         help='enable public/anonymous user read')
     args = parser.parse_args()
+
 
     # get connection info
     if args.s != None and args.u != None and args.p != None: 
@@ -387,7 +367,7 @@ if __name__ == '__main__':
             print('CREATE REPOSITORY ' + args.repo)
             cr = createrepo(args.repo, args.repoclass, args.repopackage)
             print(cr.text)
-        
+
         gg = getgroup(args.group)
         if gg.status_code == 404:    # create new group
             print('CREATE GROUP ' + args.group)
