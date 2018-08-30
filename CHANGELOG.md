@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - `requirements.txt` file
 - helper function `issubset(list1, list2)` to improve readability
+### Fixed
+- `Dockerfile` -- you can now build straight from it after you clone the repo
 
 ## [0.1.1] - 2018-08-28
 ### Added
