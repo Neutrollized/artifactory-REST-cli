@@ -98,7 +98,7 @@ docker run -it --rm -v /tmp/mycredentialsfile:/mnt/artifactory_info neutrollized
 ```
 or
 ```
-docker run -it --rm neutrollized/artifactory-rest-cli:0.1.2 --cred /mnt/artifactory_info -s myartifactoryserver -u admin -p abc123 --get --user glen 
+docker run -it --rm neutrollized/artifactory-rest-cli:0.1.2 -s myartifactoryserver -u admin -p abc123 --get --user glen 
 ```
 
 
